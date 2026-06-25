@@ -163,6 +163,7 @@ function handleSignup() {
   btn.textContent = 'Creating account…';
   btn.style.opacity = '0.7';
   setTimeout(() => {
+    // แก้ไขตรงนี้: ลบ / ข้างหน้าออกเพื่อให้รองรับ path ของ GitHub Pages
     window.location.href = 'dashboard.html';
   }, 1400);
 }
