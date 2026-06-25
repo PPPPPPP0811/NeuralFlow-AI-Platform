@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Page Not Found · NeuralFlow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.error-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--s6) var(--s3);
+  position: relative;
+  z-index: 1;
+}
+
+.error-code {
+  font-family: var(--font-mono);
+  font-size: clamp(100px, 18vw, 180px);
+  font-weight: 700;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--indigo-lt), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--s2);
+  letter-spacing: -4px;
+  user-select: none;
+}
+
+.error-icon {
+  font-size: 40px;
+  margin-bottom: var(--s3);
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+.error-title {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 4vw, 36px);
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: var(--s2);
+  letter-spacing: -0.5px;
+}
+
+.error-sub {
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 440px;
+  line-height: 1.7;
+  margin-bottom: var(--s5);
+}
+
+.error-actions {
+  display: flex;
+  gap: var(--s2);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: var(--s6);
+}
+
+.error-links {
+  display: flex;
+  gap: var(--s4);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.error-link {
+  font-size: 13px;
+  color: var(--muted);
+  transition: color 0.2s;
+  border-bottom: 1px solid transparent;
+}
+.error-link:hover { color: var(--indigo-lt); border-bottom-color: var(--indigo-lt); }
+
+/* Glitch effect on 404 */
+.error-code {
+  position: relative;
+}
+.error-code::before,
+.error-code::after {
+  content: '404';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--indigo-lt), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.error-code::before {
+  animation: glitch1 4s infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+  transform: translate(-3px);
+  opacity: 0.6;
+}
+.error-code::after {
+  animation: glitch2 4s infinite;
+  clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+  transform: translate(3px);
+  opacity: 0.6;
+}
+@keyframes glitch1 {
+  0%,90%,100% { transform: translate(0); opacity: 0; }
+  92%          { transform: translate(-4px, 2px); opacity: 0.5; }
+  94%          { transform: translate(4px, -2px); opacity: 0.5; }
+  96%          { transform: translate(-2px, 1px); opacity: 0.5; }
+}
+@keyframes glitch2 {
+  0%,90%,100% { transform: translate(0); opacity: 0; }
+  92%          { transform: translate(4px, -1px); opacity: 0.5; }
+  94%          { transform: translate(-4px, 2px); opacity: 0.5; }
+  96%          { transform: translate(2px, -1px); opacity: 0.5; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="neural-canvas"></canvas>
+
+<!-- Minimal nav -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">⚡</div>
+    NeuralFlow
+  </a>
+  <div class="nav-actions">
+    <a href="login.html" class="btn btn-outline">Sign in</a>
+    <a href="signup.html" class="btn btn-primary">Start free →</a>
+  </div>
+</nav>
+
+<main class="error-page">
+
+  <div class="error-icon">🤖</div>
+  <div class="error-code">404</div>
+  <h1 class="error-title">This page got lost in the neural network</h1>
+  <p class="error-sub">The page you're looking for doesn't exist, was moved, or the model hallucinated the URL. Let's get you back on track.</p>
+
+  <div class="error-actions">
+    <a href="index.html" class="btn btn-primary btn-lg">← Back to Home</a>
+    <a href="dashboard.html" class="btn btn-outline btn-lg">Go to Dashboard</a>
+  </div>
+
+  <div class="error-links">
+    <a href="#" class="error-link">Documentation</a>
+    <a href="#" class="error-link">API Reference</a>
+    <a href="index.html#contact" class="error-link">Contact Support</a>
+    <a href="#" class="error-link">Status Page</a>
+  </div>
+
+</main>
+
+<script src="js/neural.js"></script>
+</body>
+</html>

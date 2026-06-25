@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing — NeuralFlow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.pricing-page {
+  position: relative;
+  z-index: 1;
+  padding: 140px var(--s3) var(--s7);
+}
+.pricing-page-inner { max-width: 1100px; margin: 0 auto; }
+
+.pricing-hero {
+  text-align: center;
+  margin-bottom: var(--s6);
+}
+
+/* Toggle */
+.billing-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  margin-bottom: var(--s6);
+  font-size: 14px;
+  color: var(--muted);
+}
+.toggle-switch {
+  position: relative;
+  width: 48px; height: 26px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: background 0.25s;
+}
+.toggle-switch.on { background: var(--indigo); border-color: var(--indigo); }
+.toggle-knob {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--white);
+  transition: transform 0.25s;
+}
+.toggle-switch.on .toggle-knob { transform: translateX(22px); }
+.save-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #34D399;
+  background: rgba(52,211,153,0.1);
+  border: 1px solid rgba(52,211,153,0.3);
+  border-radius: var(--r-pill);
+  padding: 2px 8px;
+}
+
+/* Cards */
+.pricing-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s3);
+  margin-bottom: var(--s6);
+}
+
+.p-card {
+  padding: var(--s4);
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px solid var(--border);
+  transition: border-color 0.25s, transform 0.25s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.p-card:hover { border-color: var(--border-hi); transform: translateY(-3px); }
+.p-card.featured {
+  border-color: rgba(91,91,214,0.5);
+  background: rgba(91,91,214,0.07);
+}
+.p-card.featured:hover { border-color: var(--indigo-lt); }
+
+.featured-ribbon {
+  position: absolute;
+  top: -1px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(90deg, var(--indigo), var(--indigo-lt));
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 18px;
+  border-radius: 0 0 var(--r-sm) var(--r-sm);
+}
+
+.p-plan-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--s2);
+  margin-top: var(--s3);
+}
+.p-plan-name.featured { color: var(--indigo-lt); }
+
+.p-price {
+  font-family: var(--font-display);
+  font-size: 52px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.p-price sup { font-size: 24px; letter-spacing: 0; vertical-align: super; font-weight: 500; color: var(--muted); }
+.p-price .custom { font-size: 36px; letter-spacing: -1px; }
+.p-period {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: var(--s3);
+}
+.p-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.65;
+  margin-bottom: var(--s4);
+  padding-bottom: var(--s3);
+  border-bottom: 1px solid var(--border);
+}
+
+.p-features { flex: 1; display: flex; flex-direction: column; gap: 10px; margin-bottom: var(--s4); }
+.p-feat {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.feat-check { color: #34D399; font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+.feat-dash  { color: var(--dim);  font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+
+.p-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 13px;
+  border-radius: var(--r-md);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  border: none;
+  font-family: var(--font-body);
+  text-decoration: none;
+}
+.p-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.p-btn-outline {
+  background: transparent;
+  color: var(--white);
+  border: 1px solid var(--border);
+}
+.p-btn-outline:hover { border-color: var(--indigo-lt); background: rgba(91,91,214,0.08); }
+.p-btn-filled {
+  background: linear-gradient(135deg, var(--indigo), var(--indigo-lt));
+  color: #fff;
+  box-shadow: 0 0 24px rgba(91,91,214,0.4);
+}
+
+/* Compare table */
+.compare-section { margin-top: var(--s6); }
+.compare-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: var(--s4);
+  text-align: center;
+}
+
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.compare-table th {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+  padding: var(--s3);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+}
+.compare-table th:first-child { color: var(--muted); font-weight: 500; }
+.compare-table td {
+  padding: 14px var(--s3);
+  font-size: 14px;
+  color: var(--muted);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  vertical-align: middle;
+}
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table td:first-child {
+  font-weight: 500;
+  color: var(--white);
+}
+.compare-table td.center { text-align: center; }
+.check-y { color: #34D399; font-size: 16px; }
+.check-n { color: var(--dim); font-size: 16px; }
+
+/* FAQ mini */
+.pricing-faq {
+  margin-top: var(--s7);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.pricing-faq h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: var(--s4);
+  text-align: center;
+}
+
+/* CTA */
+.pricing-cta {
+  margin-top: var(--s7);
+  text-align: center;
+  padding: var(--s6);
+  background: linear-gradient(135deg, rgba(91,91,214,0.15), rgba(34,211,238,0.08));
+  border: 1px solid rgba(91,91,214,0.3);
+  border-radius: var(--r-lg);
+}
+.pricing-cta h2 { font-family: var(--font-display); font-size: clamp(22px, 3.5vw, 32px); font-weight: 700; color: var(--white); margin-bottom: var(--s2); }
+.pricing-cta p  { color: var(--muted); margin-bottom: var(--s4); font-size: 16px; }
+
+@media (max-width: 860px) {
+  .pricing-cards { grid-template-columns: 1fr; max-width: 440px; margin-left: auto; margin-right: auto; }
+  .compare-table { font-size: 12px; }
+  .compare-table th, .compare-table td { padding: 10px var(--s2); }
+}
+</style>
+</head>
+<body>
+
+<canvas id="neural-canvas"></canvas>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">⚡</div>
+    NeuralFlow
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html#features">Features</a></li>
+    <li><a href="index.html#how">How it works</a></li>
+    <li><a href="pricing.html" style="color:var(--white)">Pricing</a></li>
+    <li><a href="index.html#faq">FAQ</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn btn-outline">Sign in</a>
+    <a href="signup.html" class="btn btn-primary">Start free →</a>
+  </div>
+  <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html#features" onclick="closeMenu()">Features</a>
+  <a href="index.html#how" onclick="closeMenu()">How it works</a>
+  <a href="pricing.html" onclick="closeMenu()">Pricing</a>
+  <a href="index.html#faq" onclick="closeMenu()">FAQ</a>
+  <div class="mobile-menu-actions">
+    <a href="login.html" class="btn btn-outline">Sign in</a>
+    <a href="signup.html" class="btn btn-primary">Start free →</a>
+  </div>
+</div>
+
+<div class="pricing-page">
+<div class="pricing-page-inner">
+
+  <!-- Hero -->
+  <div class="pricing-hero" data-reveal>
+    <p class="eyebrow">// pricing</p>
+    <h1 class="section-heading" style="max-width:600px; margin:0 auto var(--s2);">Simple, transparent pricing</h1>
+    <p class="section-sub" style="margin:0 auto var(--s4); text-align:center;">No hidden fees. No usage surprises. Cancel any time.</p>
+
+    <!-- Billing toggle -->
+    <div class="billing-toggle">
+      <span>Monthly</span>
+      <div class="toggle-switch on" id="billing-toggle" onclick="toggleBilling()">
+        <div class="toggle-knob"></div>
+      </div>
+      <span style="color:var(--white); font-weight:500;">Annual</span>
+      <span class="save-badge">Save 20%</span>
+    </div>
+  </div>
+
+  <!-- Cards -->
+  <div class="pricing-cards" data-reveal data-reveal-delay="100">
+
+    <!-- Starter -->
+    <div class="p-card">
+      <p class="p-plan-name">Starter</p>
+      <div class="p-price"><sup>$</sup>0</div>
+      <p class="p-period">Free forever</p>
+      <p class="p-desc">For individuals exploring AI or building small projects. No credit card required.</p>
+      <div class="p-features">
+        <div class="p-feat"><span class="feat-check">✓</span> 100 API requests / day</div>
+        <div class="p-feat"><span class="feat-check">✓</span> Access to 3 AI models</div>
+        <div class="p-feat"><span class="feat-check">✓</span> Basic analytics dashboard</div>
+        <div class="p-feat"><span class="feat-check">✓</span> Community support</div>
+        <div class="p-feat"><span class="feat-check">✓</span> REST API + SDK access</div>
+        <div class="p-feat"><span class="feat-dash">–</span> Smart model routing</div>
+        <div class="p-feat"><span class="feat-dash">–</span> Uptime SLA</div>
+        <div class="p-feat"><span class="feat-dash">–</span> Custom alerts</div>
+      </div>
+      <a href="signup.html" class="p-btn p-btn-outline">Get started free</a>
+    </div>
+
+    <!-- Pro (featured) -->
+    <div class="p-card featured">
+      <div class="featured-ribbon">Most Popular</div>
+      <p class="p-plan-name featured">Pro</p>
+      <div class="p-price" id="pro-price"><sup>$</sup>49</div>
+      <p class="p-period" id="pro-period">/ month · billed annually</p>
+      <p class="p-desc">For teams shipping production AI products. Unlimited requests, priority support, and full observability.</p>
+      <div class="p-features">
+        <div class="p-feat"><span class="feat-check">✓</span> Unlimited API requests</div>
+        <div class="p-feat"><span class="feat-check">✓</span> 8+ AI models (GPT-4o, Claude, Gemini…)</div>
+        <div class="p-feat"><span class="feat-check">✓</span> Full analytics + custom alerts</div>
+        <div class="p-feat"><span class="feat-check">✓</span> Priority email &amp; chat support</div>
+        <div class="p-feat"><span class="feat-check">✓</span> Smart model routing</div>
+        <div class="p-feat"><span class="feat-check">✓</span> 99.9% uptime SLA</div>
+        <div class="p-feat"><span class="feat-check">✓</span> 100+ integrations</div>
+        <div class="p-feat"><span class="feat-dash">–</span> Private VPC deployment</div>
+      </div>
+      <a href="signup.html" class="p-btn p-btn-filled">Start 14-day free trial →</a>
+    </div>
+
+    <!-- Enterprise -->
+    <div class="p-card">
+      <p class="p-plan-name">Enterprise</p>
+      <div class="p-price"><span class="custom">Custom</span></div>
+      <p class="p-period">Talk to our team</p>
+      <p class="p-desc">For large teams and regulated industries that need custom contracts, SLAs, and dedicated infrastructure.</p>
+      <div class="p-features">
+        <div class="p-feat"><span class="feat-check">✓</span> Everything in Pro</div>
+        <div class="p-feat"><span class="feat-check">✓</span> Private VPC deployment</div>
+        <div class="p-feat"><span class="feat-check">✓</span> Custom fine-tuned models</div>
+        <div class="p-feat"><span class="feat-check">✓</span> 24/7 dedicated support engineer</div>
+        <div class="p-feat"><span class="feat-check">✓</span> 99.99% SLA + auto failover</div>
+        <div class="p-feat"><span class="feat-check">✓</span> SOC 2 / HIPAA / GDPR docs</div>
+        <div class="p-feat"><span class="feat-check">✓</span> Custom billing + invoicing</div>
+        <div class="p-feat"><span class="feat-check">✓</span> Dedicated solutions engineer</div>
+      </div>
+      <a href="index.html#contact" class="p-btn p-btn-outline">Contact Sales →</a>
+    </div>
+
+  </div>
+
+  <!-- Feature comparison table -->
+  <div class="compare-section" data-reveal>
+    <h2 class="compare-title">Full feature comparison</h2>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th style="width:40%">Feature</th>
+          <th style="text-align:center">Starter</th>
+          <th style="text-align:center; color:var(--indigo-lt)">Pro</th>
+          <th style="text-align:center">Enterprise</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>API requests</td><td class="center">100/day</td><td class="center">Unlimited</td><td class="center">Unlimited+</td></tr>
+        <tr><td>AI models available</td><td class="center">3</td><td class="center">8+</td><td class="center">Custom</td></tr>
+        <tr><td>Smart model routing</td><td class="center"><span class="check-n">✕</span></td><td class="center"><span class="check-y">✓</span></td><td class="center"><span class="check-y">✓</span></td></tr>
+        <tr><td>Analytics dashboard</td><td class="center">Basic</td><td class="center">Full</td><td class="center">Custom</td></tr>
+        <tr><td>Custom alerts</td><td class="center"><span class="check-n">✕</span></td><td class="center"><span class="check-y">✓</span></td><td class="center"><span class="check-y">✓</span></td></tr>
+        <tr><td>Uptime SLA</td><td class="center"><span class="check-n">✕</span></td><td class="center">99.9%</td><td class="center">99.99%</td></tr>
+        <tr><td>Support</td><td class="center">Community</td><td class="center">Priority</td><td class="center">24/7 Dedicated</td></tr>
+        <tr><td>Integrations</td><td class="center"><span class="check-n">✕</span></td><td class="center"><span class="check-y">✓</span> 100+</td><td class="center"><span class="check-y">✓</span> Custom</td></tr>
+        <tr><td>Private VPC</td><td class="center"><span class="check-n">✕</span></td><td class="center"><span class="check-n">✕</span></td><td class="center"><span class="check-y">✓</span></td></tr>
+        <tr><td>Fine-tuned models</td><td class="center"><span class="check-n">✕</span></td><td class="center"><span class="check-n">✕</span></td><td class="center"><span class="check-y">✓</span></td></tr>
+        <tr><td>SOC 2 / HIPAA docs</td><td class="center"><span class="check-n">✕</span></td><td class="center"><span class="check-n">✕</span></td><td class="center"><span class="check-y">✓</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mini FAQ -->
+  <div class="pricing-faq" data-reveal>
+    <h2>Common questions</h2>
+    <div class="faq-list">
+      <details class="faq-item glass-card">
+        <summary class="faq-q">Can I switch plans later?</summary>
+        <p class="faq-a">Yes — upgrade, downgrade, or cancel at any time. When you upgrade mid-cycle you're prorated for the remainder of the billing period.</p>
+      </details>
+      <details class="faq-item glass-card">
+        <summary class="faq-q">What happens after the 14-day trial?</summary>
+        <p class="faq-a">After the trial you can pick any paid plan or continue on the free Starter tier — no credit card needed to start, and we'll always remind you before charging anything.</p>
+      </details>
+      <details class="faq-item glass-card">
+        <summary class="faq-q">How does per-request pricing work for overage?</summary>
+        <p class="faq-a">On the Pro plan there's no hard cap — you pay a flat monthly fee for unlimited requests. On Starter, requests above 100/day are queued until the next day or you can upgrade.</p>
+      </details>
+      <details class="faq-item glass-card">
+        <summary class="faq-q">Do you offer nonprofit or student discounts?</summary>
+        <p class="faq-a">Yes! Registered nonprofits and verified students get 50% off Pro, billed annually. Email <a href="mailto:hello@neuralflow.ai" style="color:var(--indigo-lt)">hello@neuralflow.ai</a> with proof of eligibility.</p>
+      </details>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="pricing-cta" data-reveal>
+    <h2>Still have questions?</h2>
+    <p>Talk to our team — we'll help you find the right plan for your use case.</p>
+    <div style="display:flex; gap:var(--s2); justify-content:center; flex-wrap:wrap;">
+      <a href="signup.html" class="btn btn-primary btn-lg">Start free trial →</a>
+      <a href="index.html#contact" class="btn btn-outline btn-lg">Talk to sales</a>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">⚡</div>
+    NeuralFlow
+  </a>
+  <ul class="footer-links">
+    <li><a href="#">Docs</a></li>
+    <li><a href="#">Blog</a></li>
+    <li><a href="#">Status</a></li>
+    <li><a href="#">Privacy</a></li>
+    <li><a href="#">Terms</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+  <p class="footer-copy">© 2025 NeuralFlow Inc. All rights reserved.</p>
+</footer>
+
+<script src="js/neural.js"></script>
+<script>
+/* Hamburger */
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobile-menu');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+});
+function closeMenu() {
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+}
+
+/* Billing toggle */
+let annual = true;
+function toggleBilling() {
+  annual = !annual;
+  const tog = document.getElementById('billing-toggle');
+  tog.classList.toggle('on', annual);
+  document.getElementById('pro-price').innerHTML = annual
+    ? '<sup>$</sup>49'
+    : '<sup>$</sup>59';
+  document.getElementById('pro-period').textContent = annual
+    ? '/ month · billed annually'
+    : '/ month · billed monthly';
+}
+</script>
+</body>
+</html>

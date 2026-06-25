@@ -230,3 +230,54 @@ document.querySelectorAll('.bento-card').forEach(card => {
     card.style.setProperty('--my', ((e.clientY - r.top)  / r.height * 100).toFixed(1) + '%');
   });
 });
+
+/* ──────────────────────────────────────────────────────────────
+   4. DARK / LIGHT MODE TOGGLE
+   Add  id="theme-toggle"  to any button to wire it up.
+   Persists choice in localStorage.
+   ────────────────────────────────────────────────────────────── */
+(function () {
+  const root = document.documentElement;
+
+  const LIGHT = {
+    '--bg':        '#F5F6FF',
+    '--surface':   '#FFFFFF',
+    '--white':     '#0F1035',
+    '--muted':     '#4B5280',
+    '--dim':       '#8B93B8',
+    '--glass':     'rgba(0, 0, 0, 0.04)',
+    '--border':    'rgba(0, 0, 0, 0.08)',
+    '--border-hi': 'rgba(91, 91, 214, 0.5)',
+  };
+  const DARK = {
+    '--bg':        '#08091A',
+    '--surface':   '#0E1128',
+    '--white':     '#EEF2FF',
+    '--muted':     '#8B93B8',
+    '--dim':       '#4B5280',
+    '--glass':     'rgba(255, 255, 255, 0.04)',
+    '--border':    'rgba(255, 255, 255, 0.08)',
+    '--border-hi': 'rgba(91, 91, 214, 0.45)',
+  };
+
+  function applyTheme(dark) {
+    const tokens = dark ? DARK : LIGHT;
+    for (const [k, v] of Object.entries(tokens)) root.style.setProperty(k, v);
+    localStorage.setItem('nf-theme', dark ? 'dark' : 'light');
+    document.querySelectorAll('[id="theme-toggle"]').forEach(btn => {
+      btn.textContent = dark ? '☀️' : '🌙';
+      btn.setAttribute('title', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    });
+  }
+
+  const saved = localStorage.getItem('nf-theme');
+  let isDark = saved ? saved === 'dark' : true; // default dark
+  applyTheme(isDark);
+
+  document.addEventListener('click', e => {
+    if (e.target.id === 'theme-toggle') {
+      isDark = !isDark;
+      applyTheme(isDark);
+    }
+  });
+}());

@@ -66,6 +66,7 @@
     NeuralFlow
   </a>
   <div class="nav-actions">
+    <button id="theme-toggle" title="Switch to light mode" style="background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:var(--muted);transition:color 0.2s;">☀️</button>
     <span style="font-size:14px; color:var(--muted);">Already have an account?</span>
     <a href="login.html" class="btn btn-outline">Sign in</a>
   </div>
@@ -161,11 +162,9 @@ function handleSignup() {
   const btn = document.querySelector('.btn-auth');
   btn.textContent = 'Creating account…';
   btn.style.opacity = '0.7';
-  // Replace this with your real registration logic
   setTimeout(() => {
-    btn.textContent = 'Create free account →';
-    btn.style.opacity = '1';
-  }, 1500);
+    window.location.href = 'dashboard.html';
+  }, 1400);
 }
 </script>
 </body>

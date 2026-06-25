@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — NeuralFlow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+/* ── Dashboard Layout ── */
+.dash-wrap {
+  display: flex;
+  min-height: 100vh;
+  padding-top: 0;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 240px;
+  background: rgba(14,17,40,0.95);
+  border-right: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  padding: var(--s3) 0;
+  transition: transform 0.3s;
+  transform: translateX(-240px);
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--white);
+  padding: 0 var(--s3) var(--s3);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--s2);
+}
+
+.sidebar-section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: var(--s2) var(--s3) var(--s1);
+}
+
+.sidebar-nav { flex: 1; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px var(--s3);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 0;
+  transition: background 0.15s, color 0.15s;
+  border-left: 2px solid transparent;
+  text-decoration: none;
+}
+.nav-item:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+.nav-item.active {
+  background: rgba(91,91,214,0.1);
+  color: var(--white);
+  border-left-color: var(--indigo-lt);
+}
+.nav-item .nav-icon { font-size: 14px; width: 20px; text-align: center; color: var(--dim); transition: color 0.15s; }
+.nav-item:hover .nav-icon, .nav-item.active .nav-icon { color: var(--indigo-lt); }
+.nav-badge {
+  margin-left: auto;
+  background: var(--indigo);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: var(--r-pill);
+}
+
+.sidebar-bottom {
+  border-top: 1px solid var(--border);
+  padding-top: var(--s2);
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px var(--s3);
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 0;
+}
+.sidebar-user:hover { background: rgba(255,255,255,0.04); }
+.user-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--indigo), var(--cyan));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 13px; font-weight: 600; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-plan { font-size: 11px; color: var(--cyan); font-family: var(--font-mono); }
+
+/* ── Main content ── */
+.dash-main {
+  margin-left: 0;
+  flex: 1;
+  min-height: 100vh;
+  background: var(--bg);
+  position: relative;
+  z-index: 1;
+}
+
+.dash-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(8,9,26,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Top row: title + right actions */
+.topbar-row1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px var(--s4);
+  gap: var(--s3);
+}
+
+/* Bottom row: nav links */
+.topbar-row2 {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--s4);
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.topbar-row2::-webkit-scrollbar { display: none; }
+
+.topbar-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.topbar-right { display: flex; align-items: center; gap: var(--s2); }
+
+.topbar-date {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* Navbar section label */
+.nav-section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 0 6px 0 12px;
+  white-space: nowrap;
+  align-self: center;
+  flex-shrink: 0;
+}
+.nav-section-label:first-child { padding-left: 0; }
+
+/* Navbar links */
+.topbar-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 0;
+  transition: color 0.15s;
+  border-bottom: 2px solid transparent;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-bottom: -1px;
+}
+.topbar-nav-link:hover { color: var(--white); }
+.topbar-nav-link.active {
+  color: var(--white);
+  border-bottom-color: var(--indigo-lt);
+}
+.topbar-nav-link .tnav-icon {
+  font-size: 12px;
+  color: var(--dim);
+  transition: color 0.15s;
+}
+.topbar-nav-link:hover .tnav-icon,
+.topbar-nav-link.active .tnav-icon { color: var(--indigo-lt); }
+
+.tnav-badge {
+  background: var(--indigo);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: var(--r-pill);
+  line-height: 1;
+}
+.tnav-badge.live {
+  background: linear-gradient(135deg, #22D3EE, #818CF8);
+}
+
+.icon-btn {
+  width: 36px; height: 36px;
+  border-radius: var(--r-sm);
+  background: var(--glass);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  position: relative;
+}
+.icon-btn:hover { border-color: var(--indigo-lt); background: rgba(91,91,214,0.1); }
+.notif-dot {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--cyan);
+  border: 2px solid var(--bg);
+}
+
+.dash-content { padding: var(--s4) var(--s5); }
+
+/* ── Stat cards row ── */
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s3);
+  margin-bottom: var(--s4);
+}
+
+.stat-card {
+  padding: var(--s3);
+  border-radius: var(--r-md);
+  background: var(--glass);
+  border: 1px solid var(--border);
+  transition: border-color 0.25s;
+}
+.stat-card:hover { border-color: var(--border-hi); }
+
+.stat-card-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: var(--s1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.stat-card-label .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.dot-indigo { background: var(--indigo-lt); }
+.dot-cyan   { background: var(--cyan); }
+.dot-green  { background: #34D399; }
+.dot-orange { background: #FB923C; }
+
+.stat-card-value {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.stat-card-delta {
+  font-size: 12px;
+  font-family: var(--font-mono);
+}
+.delta-up   { color: #34D399; }
+.delta-down { color: #F87171; }
+
+/* ── Chart area ── */
+.chart-row {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: var(--s3);
+  margin-bottom: var(--s4);
+}
+
+.panel {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s4);
+  transition: border-color 0.25s;
+}
+.panel:hover { border-color: var(--border-hi); }
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--s4);
+}
+.panel-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--white);
+}
+.panel-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.period-tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  border-radius: var(--r-sm);
+  padding: 3px;
+}
+.period-tab {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--muted);
+  transition: background 0.2s, color 0.2s;
+  border: none;
+  background: none;
+}
+.period-tab.active { background: var(--indigo); color: #fff; }
+
+/* SVG Chart */
+.svg-chart { width: 100%; height: 180px; }
+
+/* Model breakdown donut */
+.donut-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s3);
+}
+.donut-svg { width: 140px; height: 140px; }
+.donut-legend { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+.legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+.legend-left { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+.legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.legend-pct { font-family: var(--font-mono); font-size: 12px; color: var(--white); font-weight: 600; }
+
+/* ── Bottom row ── */
+.bottom-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s3);
+}
+
+/* API Key panel */
+.api-key-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 10px var(--s2);
+  margin-bottom: var(--s3);
+}
+.api-key-val {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.copy-btn {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--indigo-lt);
+  background: rgba(91,91,214,0.1);
+  border: 1px solid rgba(91,91,214,0.3);
+  border-radius: var(--r-sm);
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.copy-btn:hover { background: rgba(91,91,214,0.2); }
+
+.key-meta {
+  font-size: 12px;
+  color: var(--dim);
+  margin-bottom: var(--s3);
+}
+.key-meta span { color: var(--muted); }
+
+/* Request log table */
+.log-table { width: 100%; border-collapse: collapse; }
+.log-table th {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  text-align: left;
+  padding: 0 0 var(--s1);
+  border-bottom: 1px solid var(--border);
+}
+.log-table td {
+  font-size: 13px;
+  color: var(--muted);
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  vertical-align: middle;
+}
+.log-table td:first-child { color: var(--white); font-weight: 500; }
+.log-table tr:last-child td { border-bottom: none; }
+
+.status-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+}
+.status-dot::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+.status-ok::before   { background: #34D399; }
+.status-err::before  { background: #F87171; }
+.status-warn::before { background: #FBBF24; }
+
+.model-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background: rgba(91,91,214,0.12);
+  border: 1px solid rgba(91,91,214,0.25);
+  color: var(--indigo-lt);
+  white-space: nowrap;
+}
+.model-tag.cyan {
+  background: rgba(34,211,238,0.08);
+  border-color: rgba(34,211,238,0.2);
+  color: var(--cyan);
+}
+.model-tag.purple {
+  background: rgba(168,85,247,0.1);
+  border-color: rgba(168,85,247,0.25);
+  color: #C084FC;
+}
+
+/* ── Upgrade banner ── */
+.upgrade-banner {
+  margin-top: var(--s4);
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg, rgba(91,91,214,0.2), rgba(34,211,238,0.1));
+  border: 1px solid rgba(91,91,214,0.35);
+  padding: var(--s4) var(--s5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+}
+.upgrade-text h3 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+.upgrade-text p { font-size: 14px; color: var(--muted); }
+.upgrade-actions { display: flex; gap: var(--s2); align-items: center; flex-shrink: 0; }
+
+/* ── Hamburger (mobile) ── */
+.dash-hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 6px;
+}
+.dash-hamburger span {
+  display: block; width: 20px; height: 2px;
+  background: var(--white); border-radius: 2px;
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 150;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .stat-cards { grid-template-columns: repeat(2, 1fr); }
+  .chart-row  { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 860px) {
+  .sidebar { transform: translateX(-240px); }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.open { display: block; }
+  .dash-main { margin-left: 0; }
+  .dash-hamburger { display: flex; }
+  .dash-content { padding: var(--s3); }
+  .dash-topbar { padding: var(--s2) var(--s3); }
+  .bottom-row { grid-template-columns: 1fr; }
+  .upgrade-banner { flex-direction: column; align-items: flex-start; }
+  .upgrade-actions { flex-direction: column; align-items: stretch; width: 100%; }
+}
+
+@media (max-width: 500px) {
+  .stat-cards { grid-template-columns: 1fr 1fr; }
+  .stat-card-value { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="neural-canvas"></canvas>
+
+<div class="dash-wrap">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="nav-logo-icon">⚡</div>
+      NeuralFlow
+    </div>
+
+    <div class="sidebar-nav">
+      <p class="sidebar-section-label">Main</p>
+      <a href="dashboard.html" class="nav-item active">
+        <span class="nav-icon"><i class="fa-solid fa-gauge-high"></i></span> Overview
+      </a>
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-bolt"></i></span> Playground
+      </a>
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span> Analytics
+        <span class="nav-badge">Live</span>
+      </a>
+
+      <p class="sidebar-section-label">Manage</p>
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-key"></i></span> API Keys
+      </a>
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-shuffle"></i></span> Model Routing
+      </a>
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-plug"></i></span> Integrations
+        <span class="nav-badge">3</span>
+      </a>
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-bell"></i></span> Alerts
+      </a>
+
+      <p class="sidebar-section-label">Account</p>
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-credit-card"></i></span> Billing
+      </a>
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-gear"></i></span> Settings
+      </a>
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-book"></i></span> Docs
+      </a>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <div class="user-avatar">J</div>
+        <div class="user-info">
+          <div class="user-name">Jane Smith</div>
+          <div class="user-plan">Pro Plan</div>
+        </div>
+        <i class="fa-solid fa-ellipsis" style="color:var(--dim); font-size:12px;"></i>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Overlay for mobile -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <!-- ══ MAIN ══ -->
+  <main class="dash-main">
+
+    <!-- Top bar -->
+    <div class="dash-topbar">
+      <!-- Row 1: title + right actions -->
+      <div class="topbar-row1">
+        <div style="display:flex; align-items:center; gap:var(--s2);">
+          <button class="dash-hamburger" onclick="openSidebar()">
+            <span></span><span></span><span></span>
+          </button>
+          <div class="topbar-title">Overview</div>
+        </div>
+        <div class="topbar-right">
+          <span class="topbar-date" id="topbar-date"></span>
+          <div class="icon-btn" title="Notifications">
+            <i class="fa-solid fa-bell"></i>
+            <span class="notif-dot"></span>
+          </div>
+          <div class="icon-btn" title="Help"><i class="fa-solid fa-circle-question"></i></div>
+          <a href="index.html" class="btn btn-outline" style="padding:7px 16px; font-size:13px;">← Home</a>
+        </div>
+      </div>
+      <!-- Row 2: horizontal nav -->
+      <div class="topbar-row2">
+        <span class="nav-section-label">Main</span>
+        <a href="dashboard.html" class="topbar-nav-link active">
+          <i class="fa-solid fa-gauge-high tnav-icon"></i> Overview
+        </a>
+        <a href="dashboard.html" class="topbar-nav-link">
+          <i class="fa-solid fa-bolt tnav-icon"></i> Playground
+        </a>
+        <a href="dashboard.html" class="topbar-nav-link">
+          <i class="fa-solid fa-chart-line tnav-icon"></i> Analytics
+          <span class="tnav-badge live">Live</span>
+        </a>
+
+        <span class="nav-section-label">Manage</span>
+        <a href="dashboard.html" class="topbar-nav-link">
+          <i class="fa-solid fa-key tnav-icon"></i> API Keys
+        </a>
+        <a href="dashboard.html" class="topbar-nav-link">
+          <i class="fa-solid fa-shuffle tnav-icon"></i> Model Routing
+        </a>
+        <a href="dashboard.html" class="topbar-nav-link">
+          <i class="fa-solid fa-plug tnav-icon"></i> Integrations
+          <span class="tnav-badge">3</span>
+        </a>
+        <a href="dashboard.html" class="topbar-nav-link">
+          <i class="fa-solid fa-bell tnav-icon"></i> Alerts
+        </a>
+
+        <span class="nav-section-label">Account</span>
+        <a href="dashboard.html" class="topbar-nav-link">
+          <i class="fa-solid fa-credit-card tnav-icon"></i> Billing
+        </a>
+        <a href="dashboard.html" class="topbar-nav-link">
+          <i class="fa-solid fa-gear tnav-icon"></i> Settings
+        </a>
+        <a href="dashboard.html" class="topbar-nav-link">
+          <i class="fa-solid fa-book tnav-icon"></i> Docs
+        </a>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="dash-content">
+
+      <!-- Stat Cards -->
+      <div class="stat-cards">
+
+        <div class="stat-card">
+          <div class="stat-card-label">
+            <span class="dot dot-indigo"></span> Total Requests
+          </div>
+          <div class="stat-card-value" id="cnt-requests">0</div>
+          <div class="stat-card-delta delta-up">↑ 18.4% vs last month</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-label">
+            <span class="dot dot-cyan"></span> Avg Latency
+          </div>
+          <div class="stat-card-value" id="cnt-latency">0<span style="font-size:16px; font-weight:400; color:var(--muted)">ms</span></div>
+          <div class="stat-card-delta delta-up">↓ 12ms faster this week</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-label">
+            <span class="dot dot-green"></span> Success Rate
+          </div>
+          <div class="stat-card-value" id="cnt-success">0<span style="font-size:16px; font-weight:400; color:var(--muted)">%</span></div>
+          <div class="stat-card-delta delta-up">↑ Stable this period</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-label">
+            <span class="dot dot-orange"></span> Est. Cost
+          </div>
+          <div class="stat-card-value" id="cnt-cost">$0</div>
+          <div class="stat-card-delta delta-down">↑ $3.20 vs last month</div>
+        </div>
+
+      </div>
+
+      <!-- Chart row -->
+      <div class="chart-row">
+
+        <!-- Line chart -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Request Volume</div>
+              <div class="panel-sub">API calls over time</div>
+            </div>
+            <div class="period-tabs">
+              <button class="period-tab" onclick="switchPeriod(this,'7d')">7d</button>
+              <button class="period-tab active" onclick="switchPeriod(this,'30d')">30d</button>
+              <button class="period-tab" onclick="switchPeriod(this,'90d')">90d</button>
+            </div>
+          </div>
+          <svg class="svg-chart" id="line-chart" viewBox="0 0 600 180" preserveAspectRatio="none">
+            <!-- Grid lines -->
+            <line x1="0" y1="45"  x2="600" y2="45"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <line x1="0" y1="90"  x2="600" y2="90"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <line x1="0" y1="135" x2="600" y2="135" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <line x1="0" y1="170" x2="600" y2="170" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <!-- Area fill -->
+            <defs>
+              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stop-color="rgba(91,91,214,0.35)"/>
+                <stop offset="100%" stop-color="rgba(91,91,214,0)"/>
+              </linearGradient>
+              <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%"   stop-color="#818CF8"/>
+                <stop offset="100%" stop-color="#22D3EE"/>
+              </linearGradient>
+            </defs>
+            <path id="chart-area" fill="url(#areaGrad)"/>
+            <path id="chart-line" fill="none" stroke="url(#lineGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Hover dot -->
+            <circle id="chart-dot" cx="0" cy="0" r="5" fill="#22D3EE" stroke="#08091A" stroke-width="2" opacity="0"/>
+          </svg>
+        </div>
+
+        <!-- Donut: Model split -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Model Usage</div>
+              <div class="panel-sub">Share by model · last 30d</div>
+            </div>
+          </div>
+          <div class="donut-wrap">
+            <svg class="donut-svg" viewBox="0 0 140 140">
+              <circle cx="70" cy="70" r="52" fill="none" stroke="rgba(91,91,214,0.55)"  stroke-width="20" stroke-dasharray="163 163" stroke-dashoffset="0"   transform="rotate(-90 70 70)"/>
+              <circle cx="70" cy="70" r="52" fill="none" stroke="rgba(34,211,238,0.7)"  stroke-width="20" stroke-dasharray="90 236"  stroke-dashoffset="-163" transform="rotate(-90 70 70)"/>
+              <circle cx="70" cy="70" r="52" fill="none" stroke="rgba(168,85,247,0.6)"  stroke-width="20" stroke-dasharray="57 269"  stroke-dashoffset="-253" transform="rotate(-90 70 70)"/>
+              <circle cx="70" cy="70" r="52" fill="none" stroke="rgba(251,146,60,0.55)" stroke-width="20" stroke-dasharray="16 310"  stroke-dashoffset="-310" transform="rotate(-90 70 70)"/>
+              <text x="70" y="65" text-anchor="middle" fill="#EEF2FF" font-family="Space Grotesk" font-size="18" font-weight="700">100%</text>
+              <text x="70" y="82" text-anchor="middle" fill="#8B93B8" font-family="DM Sans" font-size="10">requests</text>
+            </svg>
+            <div class="donut-legend">
+              <div class="legend-item">
+                <span class="legend-left"><span class="legend-dot" style="background:#818CF8"></span>GPT-4o</span>
+                <span class="legend-pct">50%</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-left"><span class="legend-dot" style="background:#22D3EE"></span>Claude 3.5</span>
+                <span class="legend-pct">28%</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-left"><span class="legend-dot" style="background:#C084FC"></span>Gemini 1.5</span>
+                <span class="legend-pct">17%</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-left"><span class="legend-dot" style="background:#FB923C"></span>Mistral</span>
+                <span class="legend-pct">5%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom row -->
+      <div class="bottom-row">
+
+        <!-- API Key panel -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title"><i class="fa-solid fa-key" style="color:var(--cyan);margin-right:6px;"></i>API Key</div>
+              <div class="panel-sub">Your active production key</div>
+            </div>
+            <button class="btn btn-outline" style="padding:6px 14px; font-size:12px;">+ New Key</button>
+          </div>
+          <div class="api-key-row">
+            <span class="api-key-val" id="apikey-display">nf_live_sk_••••••••••••••••••••••••••••••</span>
+            <button class="copy-btn" onclick="copyKey()">Copy</button>
+          </div>
+          <div class="key-meta">Created <span>Jan 12, 2025</span> · Last used <span>2 minutes ago</span> · <span style="color:#34D399;">Active</span></div>
+
+          <div style="margin-top:var(--s3);">
+            <div class="stat-card-label" style="margin-bottom:var(--s1);">Usage this billing period</div>
+            <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:var(--r-pill); overflow:hidden; margin-bottom:6px;">
+              <div style="height:100%; width:67%; background:linear-gradient(90deg,var(--indigo),var(--cyan)); border-radius:var(--r-pill);"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--muted);">
+              <span>67,241 / 100,000 requests</span>
+              <span style="color:var(--indigo-lt); font-family:var(--font-mono);">67%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent requests log -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--indigo-lt);margin-right:6px;"></i>Recent Requests</div>
+              <div class="panel-sub">Last 5 API calls</div>
+            </div>
+            <button class="btn btn-outline" style="padding:6px 14px; font-size:12px;">View all</button>
+          </div>
+          <table class="log-table">
+            <thead>
+              <tr>
+                <th>Endpoint</th>
+                <th>Model</th>
+                <th>Latency</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>/v1/chat</td>
+                <td><span class="model-tag">gpt-4o</span></td>
+                <td>128ms</td>
+                <td><span class="status-dot status-ok">200 OK</span></td>
+              </tr>
+              <tr>
+                <td>/v1/chat</td>
+                <td><span class="model-tag cyan">claude-3.5</span></td>
+                <td>145ms</td>
+                <td><span class="status-dot status-ok">200 OK</span></td>
+              </tr>
+              <tr>
+                <td>/v1/embed</td>
+                <td><span class="model-tag">gpt-4o</span></td>
+                <td>89ms</td>
+                <td><span class="status-dot status-ok">200 OK</span></td>
+              </tr>
+              <tr>
+                <td>/v1/chat</td>
+                <td><span class="model-tag purple">gemini-1.5</span></td>
+                <td>312ms</td>
+                <td><span class="status-dot status-warn">429 Retry</span></td>
+              </tr>
+              <tr>
+                <td>/v1/route</td>
+                <td><span class="model-tag">gpt-4o</span></td>
+                <td>97ms</td>
+                <td><span class="status-dot status-ok">200 OK</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- Upgrade banner -->
+      <div class="upgrade-banner">
+        <div class="upgrade-text">
+          <h3><i class="fa-solid fa-rocket" style="color:var(--cyan);margin-right:8px;"></i>Unlock Enterprise features</h3>
+          <p>Get a dedicated VPC, 99.99% SLA, custom model fine-tuning, and a dedicated solutions engineer.</p>
+        </div>
+        <div class="upgrade-actions">
+          <a href="#" class="btn btn-primary">Upgrade to Enterprise</a>
+          <a href="#" class="btn btn-outline">Schedule a call</a>
+        </div>
+      </div>
+
+    </div><!-- /dash-content -->
+  </main>
+
+</div><!-- /dash-wrap -->
+
+<script src="js/neural.js"></script>
+<script>
+/* ── Date ── */
+const d = new Date();
+document.getElementById('topbar-date').textContent =
+  d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+
+/* ── Sidebar mobile ── */
+function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').classList.add('open'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('open'); }
+
+/* ── Animated counters ── */
+function animateCount(id, target, prefix, suffix, duration) {
+  const el = document.getElementById(id);
+  const start = performance.now();
+  function tick(now) {
+    const p = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    const v = Math.round(ease * target);
+    el.innerHTML = (prefix||'') + v.toLocaleString() + (suffix||'');
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+window.addEventListener('load', () => {
+  animateCount('cnt-requests', 67241, '',   '',   1400);
+  animateCount('cnt-latency',  140,   '',   '<span style="font-size:16px;font-weight:400;color:var(--muted)">ms</span>', 1000);
+  animateCount('cnt-success',  99,    '',   '<span style="font-size:16px;font-weight:400;color:var(--muted)">%</span>',  900);
+  animateCount('cnt-cost',     24,    '$',  '',   1200);
+});
+
+/* ── Line chart ── */
+const datasets = {
+  '7d':  [40,55,48,72,65,88,76],
+  '30d': [20,35,28,45,38,55,50,62,58,70,65,75,68,80,72,85,78,88,82,90,85,95,88,100,92,88,95,100,96,100],
+  '90d': [10,15,20,18,25,22,30,28,35,32,40,38,45,42,50,48,55,52,58,55,62,60,65,62,68,65,70,68,72,70,
+          75,72,78,75,80,78,82,80,85,82,88,85,90,88,92,90,95,92,96,94,98,96,100,98,97,99,98,100,97,99,
+          98,100,97,99,100,98,96,100,99,97,100,98,97,99,100,98,97,99,100,98,96,99,100,98,97,99,100,98,97,100]
+};
+
+function drawChart(key) {
+  const data = datasets[key];
+  const svg = document.getElementById('line-chart');
+  const W = 600, H = 170;
+  const pad = { l:10, r:10, t:10, b:10 };
+  const w = W - pad.l - pad.r;
+  const h = H - pad.t - pad.b;
+  const max = Math.max(...data);
+
+  const pts = data.map((v,i) => {
+    const x = pad.l + (i / (data.length-1)) * w;
+    const y = pad.t + h - (v/max)*h;
+    return [x,y];
+  });
+
+  const linePts = pts.map((p,i) => (i===0?`M${p[0]},${p[1]}`:`L${p[0]},${p[1]}`)).join(' ');
+  const areaPts = `${linePts} L${pts[pts.length-1][0]},${H} L${pts[0][0]},${H} Z`;
+
+  document.getElementById('chart-line').setAttribute('d', linePts);
+  document.getElementById('chart-area').setAttribute('d', areaPts);
+}
+drawChart('30d');
+
+function switchPeriod(btn, key) {
+  document.querySelectorAll('.period-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  drawChart(key);
+}
+
+/* ── Copy key ── */
+let revealed = false;
+function copyKey() {
+  const display = document.getElementById('apikey-display');
+  if (!revealed) {
+    display.textContent = 'nf_live_sk_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6';
+    revealed = true;
+  }
+  navigator.clipboard?.writeText(display.textContent).catch(()=>{});
+  const btn = document.querySelector('.copy-btn');
+  btn.textContent = 'Copied!';
+  btn.style.color = '#34D399';
+  setTimeout(() => { btn.textContent = 'Copy'; btn.style.color = ''; }, 2000);
+}
+</script>
+</body>
+</html>
